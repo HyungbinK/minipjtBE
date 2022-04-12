@@ -24,9 +24,6 @@ public class Comment extends Timestamped{
     @Column(nullable = false)
     private String comment;
 
-    //userinfo OnetoOne(?)
-
-
     public Comment(CommentRequestDto commentRequestDto) {
         this.userId = commentRequestDto.getUserId();
         this.boardId = commentRequestDto.getBoardId();
