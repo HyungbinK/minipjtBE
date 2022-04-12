@@ -7,4 +7,5 @@ public class CommentRequestDto {
     private Long userId;
     private Long boardId;
     private String comment;
+    private Long parentId;
 }

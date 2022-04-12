@@ -18,6 +18,12 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
         // Token 생성
         final String token = JwtTokenUtils.generateJwtToken(userDetails);
         response.addHeader(AUTH_HEADER, TOKEN_TYPE + " " + token);
+        try {
+            response.getWriter().write("로그인이 완료되었습니다.");
+        }catch (Exception e){
+
+        }
+
     }
 
 }

@@ -3,6 +3,8 @@ package com.sprata.minipjtbe.model;
 import com.sprata.minipjtbe.dto.BoardDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import javax.persistence.*;
 
@@ -10,7 +12,8 @@ import javax.persistence.*;
 @Getter
 @Entity
 public class Board extends Timestamped {
-    @GeneratedValue(strategy = GenerationType.AUTO)
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
@@ -34,6 +37,9 @@ public class Board extends Timestamped {
 
     @Column(nullable = false)
     private String shoesinfo;
+
+    @Column(columnDefinition = "integer default 0",nullable = false)
+    private int views;
 
     public Board(BoardDto boardDto){
         this.title =boardDto.getTitle();

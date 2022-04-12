@@ -14,11 +14,13 @@ public class BoardsDto {
     private String title;
     private String content;
     private int like;
-    private int userinfo;
+    private UserInfoDto userinfo;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private int views;
+    private boolean mylike;
 
-    public BoardsDto(Board board,int like, int userinfo){
+    public BoardsDto(Board board,int like, UserInfoDto userinfo,boolean mylike){
         this.boardId= board.getId();
         this.title= board.getTitle();
         this.content = board.getContent();
@@ -27,5 +29,7 @@ public class BoardsDto {
         this.userinfo = userinfo;
         this.createdAt = board.getCreatedAt();
         this.modifiedAt = board.getModifiedAt();
+        this.views = board.getViews();
+        this.mylike = mylike;
     }
 }

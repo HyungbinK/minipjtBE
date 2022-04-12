@@ -2,11 +2,8 @@ package com.sprata.minipjtbe.controller;
 
 import com.sprata.minipjtbe.dto.IdCheckRequestDto;
 import com.sprata.minipjtbe.dto.SignupRequestDto;
-import com.sprata.minipjtbe.dto.UserInfoDto;
-import com.sprata.minipjtbe.security.UserDetailsImpl;
 import com.sprata.minipjtbe.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

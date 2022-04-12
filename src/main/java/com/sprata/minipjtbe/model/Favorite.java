@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 public class Favorite {
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 

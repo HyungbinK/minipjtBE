@@ -24,10 +24,20 @@ public class Comment extends Timestamped{
     @Column(nullable = false)
     private String comment;
 
+<<<<<<< HEAD
+=======
+    @Column(nullable = false)
+    private Long parentId;
+
+
+
+
+>>>>>>> f520e7f8c0d610aec4c950d049519c06e247f3f1
     public Comment(CommentRequestDto commentRequestDto) {
         this.userId = commentRequestDto.getUserId();
         this.boardId = commentRequestDto.getBoardId();
         this.comment = commentRequestDto.getComment();
+        this.parentId= commentRequestDto.getParentId();
     }
 
     public void update(CommentRequestDto commentRequestDto) {

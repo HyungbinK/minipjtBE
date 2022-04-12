@@ -10,4 +10,5 @@ public interface FavoriteRepository extends JpaRepository<Favorite,Long> {
    Optional<Favorite> findByBoardIdAndUserId(Long boardId, Long userId);
    int countAllByBoardId(Long boardId);
    List<Favorite> findAllByUserId(Long userId);
+   void deleteAllByBoardId(Long boardId);
 }

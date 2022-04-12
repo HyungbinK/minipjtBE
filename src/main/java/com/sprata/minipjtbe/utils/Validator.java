@@ -1,11 +1,18 @@
 package com.sprata.minipjtbe.utils;
 
+import com.sprata.minipjtbe.dto.BoardsDto;
+import com.sprata.minipjtbe.dto.CommentRequestDto;
 import com.sprata.minipjtbe.dto.IdCheckRequestDto;
 import com.sprata.minipjtbe.dto.SignupRequestDto;
+import com.sprata.minipjtbe.model.Comment;
 import com.sprata.minipjtbe.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Component
@@ -48,6 +55,38 @@ public class Validator {
     public void idCheck(IdCheckRequestDto idCheckRequestDto) throws IllegalArgumentException {
         if (userRepository.findByUsername(idCheckRequestDto.getUserEmail()).isPresent()) {
             throw new IllegalArgumentException("중복된 아이디가 존재합니다.");
+        }
+    }
+
+    public Page<BoardsDto> overPages(List<BoardsDto> boardsList, int start, int end, Pageable pageable, int page) {
+        Page<BoardsDto> pages = new PageImpl<>(boardsList.subList(start, end), pageable, boardsList.size());
+        if(page > pages.getTotalPages()){
+            throw new IllegalArgumentException("요청할 수 없는 페이지 입니다.");
+        }
+        return pages;
+    }
+
+    public void emptyComment(CommentRequestDto commentRequestDto) {
+        if(commentRequestDto.getComment() == null) {
+            throw new IllegalArgumentException("댓글을 입력하세요");
+        }
+    }
+    public void alreadyDelete(boolean favorite, String s) {
+        if(favorite){
+            throw new IllegalArgumentException(s);
+        }
+    }
+
+
+    public void sameContent(boolean board, String s) {
+        if(board){
+            throw new IllegalArgumentException(s);
+        }
+    }
+
+    public void sameComment(CommentRequestDto commentRequestDto, Comment comment) {
+        if(comment.getComment().equals(commentRequestDto.getComment())){
+            throw new IllegalArgumentException("수정된 내용이 없습니다.");
         }
     }
 
