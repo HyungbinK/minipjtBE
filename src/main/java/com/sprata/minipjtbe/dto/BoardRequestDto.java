@@ -8,7 +8,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class BoardDto {
+public class BoardRequestDto {
     private String title;
     private String content;
     private Long userId;
@@ -17,10 +17,10 @@ public class BoardDto {
     private String bottominfo;
     private String shoesinfo;
 
-    public BoardDto() {
+    public BoardRequestDto() {
     }
 
-    public BoardDto(String title, String content, Long userId, String headinfo, String topinfo, String bottominfo, String shoesinfo) {
+    public BoardRequestDto(String title, String content, Long userId, String headinfo, String topinfo, String bottominfo, String shoesinfo) {
         this.title = title;
         this.content = content;
         this.userId = userId;

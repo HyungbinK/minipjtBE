@@ -1,6 +1,6 @@
 package com.sprata.minipjtbe.utils;
 
-import com.sprata.minipjtbe.dto.BoardsDto;
+import com.sprata.minipjtbe.dto.BoardResponseDto;
 import com.sprata.minipjtbe.dto.CommentRequestDto;
 import com.sprata.minipjtbe.dto.IdCheckRequestDto;
 import com.sprata.minipjtbe.dto.SignupRequestDto;
@@ -58,8 +58,8 @@ public class Validator {
         }
     }
 
-    public Page<BoardsDto> overPages(List<BoardsDto> boardsList, int start, int end, Pageable pageable, int page) {
-        Page<BoardsDto> pages = new PageImpl<>(boardsList.subList(start, end), pageable, boardsList.size());
+    public Page<BoardResponseDto> overPages(List<BoardResponseDto> boardsList, int start, int end, Pageable pageable, int page) {
+        Page<BoardResponseDto> pages = new PageImpl<>(boardsList.subList(start, end), pageable, boardsList.size());
         if(page > pages.getTotalPages()){
             throw new IllegalArgumentException("요청할 수 없는 페이지 입니다.");
         }

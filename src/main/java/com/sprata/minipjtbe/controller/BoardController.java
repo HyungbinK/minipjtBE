@@ -1,10 +1,9 @@
 package com.sprata.minipjtbe.controller;
 
-import com.sprata.minipjtbe.dto.BoardDto;
-import com.sprata.minipjtbe.dto.BoardsDto;
+import com.sprata.minipjtbe.dto.BoardRequestDto;
+import com.sprata.minipjtbe.dto.BoardResponseDto;
 import com.sprata.minipjtbe.security.UserDetailsImpl;
 import com.sprata.minipjtbe.service.BoardService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,23 +27,22 @@ public class BoardController {
                               @RequestParam("content") String content, @RequestParam("userId") Long userId,
                               @RequestParam("headinfo") String headinfo, @RequestParam("topinfo") String topinfo,
                               @RequestParam("bottominfo") String bottominfo, @RequestParam("shoesinfo") String shoesinfo) throws IOException {
-        BoardDto boardDto = new BoardDto(title, content, userId, headinfo, topinfo,  bottominfo, shoesinfo);
+        BoardRequestDto boardDto = new BoardRequestDto(title, content, userId, headinfo, topinfo,  bottominfo, shoesinfo);
         boardService.registBoard(boardDto, file);
         return "gogo";
     }
 
     //전체 게시글 조회
-    @GetMapping("/api/board/{page}")
-    public Page<BoardsDto> showAllBoard(@PathVariable int page,
-                                        @AuthenticationPrincipal UserDetailsImpl userDetails){
-        Long userId = userDetails.getUser().getId();
-        return boardService.showAllBoard(page,userId);
+    @GetMapping("/api/board/{userid}/{page}")
+    public Page<BoardResponseDto> showAllBoard(@PathVariable int page,
+                                               @PathVariable Long userid){
+        return boardService.showAllBoard(page,userid);
     }
 
     //게시글 수정
     @PutMapping("/api/board/{boardid}")
-    public String updateBoard(@PathVariable Long boardid, @RequestBody BoardDto boardDto) {
-        return boardService.updateBoard(boardid, boardDto);
+    public String updateBoard(@PathVariable Long boardid, @RequestBody BoardRequestDto boardRequestDto) {
+        return boardService.updateBoard(boardid, boardRequestDto);
     }
 
     //게시글 삭제
@@ -55,36 +53,36 @@ public class BoardController {
 
     //내가 작성한 게시글 조회
     @GetMapping("/api/board/myboard/{userid}/{page}")
-    public Page<BoardsDto> showMyBoard(@PathVariable Long userid,
-                                       @PathVariable int page){
+    public Page<BoardResponseDto> showMyBoard(@PathVariable Long userid,
+                                              @PathVariable int page){
         return boardService.showMyBoard(userid,page);
     }
 
     //내가 좋아요한 게시글 조회
     @GetMapping("/api/board/favoriteboard/{userid}/{page}")
-    public Page<BoardsDto> showFavoriteBoard(@PathVariable Long userid,
-                                             @PathVariable int page){
+    public Page<BoardResponseDto> showFavoriteBoard(@PathVariable Long userid,
+                                                    @PathVariable int page){
         return boardService.showFavoriteBoard(userid,page);
     }
 
 
+    //조회수
+    @PutMapping("/api/board/views/{boardid}")
+    public String updateViews(@PathVariable Long boardid){
+        return boardService.updateViews(boardid);
+    }
+
     //상세페이지
     @GetMapping("/api/board/detail/{boardid}")
-    public BoardsDto showBoardDetail(@PathVariable Long boardid,
-                                     @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public BoardResponseDto showBoardDetail(@PathVariable Long boardid,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
         Long userId = userDetails.getUser().getId();
         return boardService.showBoardDetail(boardid,userId);
     }
 
-    @PostMapping("/api/test")
-    public void test(@RequestPart("files") MultipartFile file, @RequestParam("fileName") String fileName){
-        System.out.println(file);
-        System.out.println(fileName);
+    @ExceptionHandler(IllegalArgumentException.class)
+    public Object nullex(Exception e) {
+        return e.getMessage();
     }
-
-//    @ExceptionHandler(IllegalArgumentException.class)
-//    public String nullex(Exception e) {
-//        return e.getMessage();
-//    }
 
 }

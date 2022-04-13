@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -39,15 +40,24 @@ public class CommentService {
 //            commentResponseDto.setRecommentList(recomments);
             commentResponseDtoList.add(commentResponseDto);
         }
-//        Iterator<CommentResponseDto> iter = commentResponseDtoList.iterator();
-//        while(iter.hasNext()){
-//            if(iter.next().getParentId()!=0){
-//                iter.remove();
-//            }
-//        }
-//        for(int i =0; i)
-        return commentResponseDtoList;
-//    }
+        List<CommentResponseDto> commentResponseDtoList2 = new ArrayList<>();
+        Iterator<CommentResponseDto> itr = commentResponseDtoList.iterator();
+        CommentResponseDto temp1;
+        CommentResponseDto temp2;
+        while(itr.hasNext()){
+            Iterator<CommentResponseDto> itr2 = commentResponseDtoList.iterator();
+            temp1 = itr.next();
+            if(temp1.getParentId()==0){
+                commentResponseDtoList2.add(temp1);
+                while(itr2.hasNext()){
+                    temp2 = itr.next();
+                    if(temp1.getId()==temp2.getParentId()){
+                        commentResponseDtoList2.add(temp2);
+                    }
+                }
+            }
+        }
+        return commentResponseDtoList2;
     }
 
     //댓글 등록
@@ -68,24 +78,6 @@ public class CommentService {
     }
 
 
-//    //대댓글 등록
-//    @Transactional
-//    public void registRecomment(RecommentRequestDto recommentRequestDto, Long commentId){
-//
-//        //댓글 조건 1 : 빈 공백
-//        if(recommentRequestDto.getComment() == null) {
-//            throw new IllegalArgumentException("댓글을 입력하세요");
-//        }
-//        //댓글 조건 2 : 로그인 안 됐을 시
-////        if(commentRequestDto.getUserId() == null) {
-////            throw new IllegalArgumentException("로그인이 필요합니다")
-////        }
-//        //xss필터 써야하는지?
-//        Recomment recomment = new Recomment(recommentRequestDto);
-////        Comment comment = new Comment(commentRequestDto);
-//        recomment.setCommentId(commentId);
-//        recommentRepository.save(recomment);
-//    }
 
     //댓글 수정
     @Transactional

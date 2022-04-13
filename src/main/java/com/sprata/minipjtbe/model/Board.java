@@ -1,10 +1,8 @@
 package com.sprata.minipjtbe.model;
 
-import com.sprata.minipjtbe.dto.BoardDto;
+import com.sprata.minipjtbe.dto.BoardRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 
 import javax.persistence.*;
 
@@ -41,23 +39,23 @@ public class Board extends Timestamped {
     @Column(columnDefinition = "integer default 0",nullable = false)
     private int views;
 
-    public Board(BoardDto boardDto){
-        this.title =boardDto.getTitle();
-        this.content = boardDto.getContent();
-        this.userId = boardDto.getUserId();
-        this.headinfo = boardDto.getHeadinfo();
-        this.topinfo = boardDto.getTopinfo();
-        this.bottominfo = boardDto.getBottominfo();
-        this.shoesinfo = boardDto.getShoesinfo();
+    public Board(BoardRequestDto boardRequestDto){
+        this.title = boardRequestDto.getTitle();
+        this.content = boardRequestDto.getContent();
+        this.userId = boardRequestDto.getUserId();
+        this.headinfo = boardRequestDto.getHeadinfo();
+        this.topinfo = boardRequestDto.getTopinfo();
+        this.bottominfo = boardRequestDto.getBottominfo();
+        this.shoesinfo = boardRequestDto.getShoesinfo();
     }
 
-    public void update(BoardDto boardDto){
-        this.title =boardDto.getTitle();
-        this.content = boardDto.getContent();
-        this.headinfo = boardDto.getHeadinfo();
-        this.topinfo = boardDto.getTopinfo();
-        this.bottominfo = boardDto.getBottominfo();
-        this.shoesinfo = boardDto.getShoesinfo();
+    public void update(BoardRequestDto boardRequestDto){
+        this.title = boardRequestDto.getTitle();
+        this.content = boardRequestDto.getContent();
+        this.headinfo = boardRequestDto.getHeadinfo();
+        this.topinfo = boardRequestDto.getTopinfo();
+        this.bottominfo = boardRequestDto.getBottominfo();
+        this.shoesinfo = boardRequestDto.getShoesinfo();
     }
 
 }

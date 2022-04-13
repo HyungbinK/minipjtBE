@@ -1,23 +1,18 @@
 package com.sprata.minipjtbe.service;
 
-import com.sprata.minipjtbe.dto.BoardDto;
-import com.sprata.minipjtbe.dto.BoardsDto;
-import com.sprata.minipjtbe.dto.ImageRequestDto;
+import com.sprata.minipjtbe.dto.BoardRequestDto;
+import com.sprata.minipjtbe.dto.BoardResponseDto;
 import com.sprata.minipjtbe.dto.UserInfoDto;
 import com.sprata.minipjtbe.model.Board;
 import com.sprata.minipjtbe.model.Favorite;
 import com.sprata.minipjtbe.model.User;
-import com.sprata.minipjtbe.repository.BoardRepository;
-import com.sprata.minipjtbe.repository.CommentRepository;
-import com.sprata.minipjtbe.repository.FavoriteRepository;
-import com.sprata.minipjtbe.repository.UserRepository;
+import com.sprata.minipjtbe.repository.*;
 import com.sprata.minipjtbe.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,22 +24,22 @@ public class BoardService {
     private final UserRepository userRepository;
     private final Validator validator;
     private final CommentRepository commentRepository;
-    private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
-    public String registBoard(BoardDto boardDto, MultipartFile file) throws IOException {
-        validator.sameContent(boardDto.getContent() == null, "내용을 입력하세요");
-        Board board = new Board(boardDto);
-
-        imageService.upload(new ImageRequestDto(boardRepository.save(board).getId(), file));
+    public String registBoard(BoardRequestDto boardRequestDto, MultipartFile file){
+        validator.sameContent(boardRequestDto.getContent() == null, "내용을 입력하세요");
+        Board board = new Board(boardRequestDto);
+        boardRepository.save(board);
+        Long postId = boardRepository.findBoardByContent(boardRequestDto.getContent()).getId();
 
         return "등록 성공하였습니다.";
     }
 
     //모든 게시글 보기
-    public Page<BoardsDto> showAllBoard(int page,Long userId){
+    public Page<BoardResponseDto> showAllBoard(int page, Long userId){
         List<Board> boardList= boardRepository.findAll();
         Pageable pageable = getPageable(page);
-        List<BoardsDto> boardsList = new ArrayList<>();
+        List<BoardResponseDto> boardsList = new ArrayList<>();
         forboardList(boardList, boardsList,userId);
         final int start =(int)pageable.getOffset();
         final int end = Math.min((start + 16),boardList.size());
@@ -52,12 +47,12 @@ public class BoardService {
     }
 
     //게시글 업데이트
-    public String updateBoard(Long id,BoardDto boardDto){
-        validator.sameContent(boardDto.getContent() == null, "내용을 입력하세요");
+    public String updateBoard(Long id, BoardRequestDto boardRequestDto){
+        validator.sameContent(boardRequestDto.getContent() == null, "내용을 입력하세요");
 
         Board board = boardRepository.findBoardById(id);
-        validator.sameContent(board.getContent().equals(boardDto.getContent()), "수정된 내용이 없습니다.");
-        board.update(boardDto);
+        validator.sameContent(board.getContent().equals(boardRequestDto.getContent()), "수정된 내용이 없습니다.");
+        board.update(boardRequestDto);
         boardRepository.save(board);
         return "수정 완료하였습니다";
     }
@@ -73,10 +68,10 @@ public class BoardService {
 
 
     //내가 작성한 보드 보기
-    public Page<BoardsDto> showMyBoard(Long userId,int page){
+    public Page<BoardResponseDto> showMyBoard(Long userId, int page){
         Pageable pageable = getPageable(page);
         List<Board> boardList= boardRepository.findAllByUserId(userId);
-        List<BoardsDto> boardsList = new ArrayList<>();
+        List<BoardResponseDto> boardsList = new ArrayList<>();
         forboardList(boardList, boardsList,userId);
         final int start =(int)pageable.getOffset();
         final int end = Math.min((start + 16),boardsList.size());
@@ -84,10 +79,10 @@ public class BoardService {
     }
 
     //내가 좋아요한 게시글 조회
-    public Page<BoardsDto> showFavoriteBoard(Long userId,int page){
+    public Page<BoardResponseDto> showFavoriteBoard(Long userId, int page){
         Pageable pageable = getPageable(page);
         List<Favorite> favoriteList =favoriteRepository.findAllByUserId(userId);
-        List<BoardsDto> boardsList = new ArrayList<>();
+        List<BoardResponseDto> boardsList = new ArrayList<>();
         for(Favorite favorite : favoriteList){
             Board board = boardRepository.findBoardById(favorite.getBoardId());
             int like = favoriteRepository.countAllByBoardId(board.getId());
@@ -96,31 +91,39 @@ public class BoardService {
             );
             UserInfoDto userInfoDto= new UserInfoDto(user.getUsername(), user.getNickname());
             boolean mylike= favoriteRepository.findByBoardIdAndUserId(board.getId(), userId).isPresent();
-            BoardsDto boardsDto = new BoardsDto(board, like, userInfoDto,mylike);
-            boardsList.add(boardsDto);
+            String url = imageRepository.findByBoardId(board.getId()).getFileUrl();
+            Long imageId = imageRepository.findByBoardId(board.getId()).getId();
+            BoardResponseDto boardResponseDto = new BoardResponseDto(board, like, userInfoDto,mylike,url,imageId);
+            boardsList.add(boardResponseDto);
         }
         final int start =(int)pageable.getOffset();
         final int end = Math.min((start + 16),boardsList.size());
         return validator.overPages(boardsList, start, end, pageable, page);
     }
 
+    public String updateViews(Long boardId){
+        boardRepository.updateViews(boardId);
+        return "성공";
+    }
+
 
 
     //게시글 자세히 보기
-    public  BoardsDto showBoardDetail(Long boardid,Long userId){
+    public BoardResponseDto showBoardDetail(Long boardid, Long userId){
         Board board = boardRepository.findBoardById(boardid);
         int like = favoriteRepository.countAllByBoardId(board.getId());
         User user = userRepository.findById(board.getUserId()).orElseThrow(
                 ()-> new IllegalArgumentException("없는 유저입니다")
         );
         UserInfoDto userInfoDto= new UserInfoDto(user.getUsername(), user.getNickname());
-        boardRepository.updateViews(boardid);
         boolean mylike= favoriteRepository.findByBoardIdAndUserId(board.getId(), userId).isPresent();
-        return new BoardsDto(board,like,userInfoDto,mylike);
+        String url = imageRepository.findByBoardId(boardid).getFileUrl();
+        Long imageId = imageRepository.findByBoardId(board.getId()).getId();
+        return new BoardResponseDto(board,like,userInfoDto,mylike,url,imageId);
     }
 
     //보드리스트 만들기
-    private void forboardList(List<Board> boardList, List<BoardsDto> boardsList,Long userId) {
+    private void forboardList(List<Board> boardList, List<BoardResponseDto> boardsList, Long userId) {
         for (Board board : boardList) {
             int like = favoriteRepository.countAllByBoardId(board.getId());
             User user = userRepository.findById(board.getUserId()).orElseThrow(
@@ -128,8 +131,10 @@ public class BoardService {
             );
             UserInfoDto userInfoDto= new UserInfoDto(user.getUsername(), user.getNickname());
             boolean mylike= favoriteRepository.findByBoardIdAndUserId(board.getId(), userId).isPresent();
-            BoardsDto boardsDto = new BoardsDto(board, like, userInfoDto,mylike);
-            boardsList.add(boardsDto);
+            String url = imageRepository.findByBoardId(board.getId()).getFileUrl();
+            Long imageId = imageRepository.findByBoardId(board.getId()).getId();
+            BoardResponseDto boardResponseDto = new BoardResponseDto(board, like, userInfoDto,mylike,url,imageId);
+            boardsList.add(boardResponseDto);
         }
     }
 
