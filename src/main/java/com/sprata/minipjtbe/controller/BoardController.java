@@ -5,19 +5,32 @@ import com.sprata.minipjtbe.dto.BoardsDto;
 import com.sprata.minipjtbe.security.UserDetailsImpl;
 import com.sprata.minipjtbe.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
-@RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
 
+    @Autowired
+    public BoardController(BoardService boardService){
+        this.boardService = boardService;
+    }
+
     //게시글 작성하기
     @PostMapping("/api/board/regist")
-    public String registBoard(@RequestBody BoardDto boardDto){
-        return boardService.registBoard(boardDto);
+    public String registBoard(@RequestParam("files") MultipartFile file, @RequestParam("title") String title,
+                              @RequestParam("content") String content, @RequestParam("userId") Long userId,
+                              @RequestParam("headinfo") String headinfo, @RequestParam("topinfo") String topinfo,
+                              @RequestParam("bottominfo") String bottominfo, @RequestParam("shoesinfo") String shoesinfo) throws IOException {
+        BoardDto boardDto = new BoardDto(title, content, userId, headinfo, topinfo,  bottominfo, shoesinfo);
+        boardService.registBoard(boardDto, file);
+        return "gogo";
     }
 
     //전체 게시글 조회
@@ -54,6 +67,7 @@ public class BoardController {
         return boardService.showFavoriteBoard(userid,page);
     }
 
+
     //상세페이지
     @GetMapping("/api/board/detail/{boardid}")
     public BoardsDto showBoardDetail(@PathVariable Long boardid,
@@ -62,9 +76,15 @@ public class BoardController {
         return boardService.showBoardDetail(boardid,userId);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public Object nullex(Exception e) {
-        return e.getMessage();
+    @PostMapping("/api/test")
+    public void test(@RequestPart("files") MultipartFile file, @RequestParam("fileName") String fileName){
+        System.out.println(file);
+        System.out.println(fileName);
     }
+
+//    @ExceptionHandler(IllegalArgumentException.class)
+//    public String nullex(Exception e) {
+//        return e.getMessage();
+//    }
 
 }

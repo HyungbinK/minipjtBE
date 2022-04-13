@@ -9,4 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageRequestDto {
     private Long boardId;
     private MultipartFile file;
+
+    public ImageRequestDto(Long boardId, MultipartFile file) {
+        this.boardId = boardId;
+        this.file = file;
+    }
 }
