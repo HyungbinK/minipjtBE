@@ -70,6 +70,7 @@ public class BoardService {
 
     //게시글 삭제
     public String deleteBoard(Long id){
+        imageService.deleteFile(imageRepository.findByBoardId(id).getId());
         validator.sameContent(boardRepository.countAllById(id) == 0, "이미 없는 게시물입니다");
         boardRepository.deleteById(id);
         favoriteRepository.deleteAllByBoardId(id);
