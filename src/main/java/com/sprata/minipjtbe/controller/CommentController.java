@@ -14,7 +14,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public Object nullex(Exception e) {
+    public Object nullex(IllegalArgumentException e) {
         return e.getMessage();
     }
     //댓글 입력

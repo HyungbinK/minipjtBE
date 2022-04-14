@@ -1,9 +1,6 @@
 package com.sprata.minipjtbe.service;
 
-import com.sprata.minipjtbe.dto.BoardRequestDto;
-import com.sprata.minipjtbe.dto.BoardResponseDto;
-import com.sprata.minipjtbe.dto.ImageRequestDto;
-import com.sprata.minipjtbe.dto.UserInfoDto;
+import com.sprata.minipjtbe.dto.*;
 import com.sprata.minipjtbe.model.Board;
 import com.sprata.minipjtbe.model.Favorite;
 import com.sprata.minipjtbe.model.User;
@@ -30,11 +27,12 @@ public class BoardService {
     private final ImageService imageService;
 
     // 게시글 등록
-    public String registBoard(BoardRequestDto boardRequestDto, MultipartFile file) throws IOException {
+    public ImageDto registBoard(BoardRequestDto boardRequestDto, MultipartFile file) throws IOException {
         validator.sameContent(boardRequestDto.getContent() == null, "내용을 입력하세요");
         Board board = new Board(boardRequestDto);
-        imageService.upload(new ImageRequestDto(boardRepository.save(board).getId(), file));
-        return "등록 성공하였습니다."; }
+        ImageDto image = imageService.upload(new ImageRequestDto(boardRepository.save(board).getId(), file));
+        return image;
+    }
 
     //모든 게시글 보기
     public Page<BoardResponseDto> showAllBoard(int page, Long userId){
@@ -53,7 +51,7 @@ public class BoardService {
     //page만들기
     private Pageable getPageable(int page) {
         Sort.Direction direction = Sort.Direction.DESC ;
-        Sort sort = Sort.by(direction, "createAt");
+        Sort sort = Sort.by(direction, "id");
         return PageRequest.of(page, 16,sort);
     }
 
@@ -70,6 +68,7 @@ public class BoardService {
 
     //게시글 삭제
     public String deleteBoard(Long id){
+        imageService.deleteFile(imageRepository.findByBoardId(id).getId());
         validator.sameContent(boardRepository.countAllById(id) == 0, "이미 없는 게시물입니다");
         boardRepository.deleteById(id);
         favoriteRepository.deleteAllByBoardId(id);

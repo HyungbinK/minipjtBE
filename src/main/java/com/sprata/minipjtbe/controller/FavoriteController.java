@@ -20,8 +20,8 @@ public class FavoriteController {
         return favoriteService.pressFavorite(favoriteDto);
     }
 
-    @DeleteMapping("/api/board/favoriteboard")
-    private String unpressFavorite(@RequestBody FavoriteDto favoriteDto){
-        return favoriteService.unpressFavorite(favoriteDto);
+    @DeleteMapping("/api/board/favoriteboard/{boardid}/{userid}")
+    private String unpressFavorite(@PathVariable Long boardid, @PathVariable Long userid){
+        return favoriteService.unpressFavorite(boardid, userid);
     }
 }
