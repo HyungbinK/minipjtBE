@@ -1,11 +1,11 @@
 package com.sprata.minipjtbe.controller;
 
+import com.sprata.minipjtbe.dto.BoardListResponseDto;
 import com.sprata.minipjtbe.dto.BoardRequestDto;
 import com.sprata.minipjtbe.dto.BoardResponseDto;
 import com.sprata.minipjtbe.security.UserDetailsImpl;
 import com.sprata.minipjtbe.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,9 +34,9 @@ public class BoardController {
 
     //전체 게시글 조회
     @GetMapping("/api/board/{userid}/{page}")
-    public Page<BoardResponseDto> showAllBoard(@PathVariable int page,
+    public BoardListResponseDto showAllBoard(@PathVariable int page,
                                                @PathVariable Long userid){
-        return boardService.showAllBoard(page,userid);
+        return new BoardListResponseDto(boardService.showAllBoard(page-1,userid));
     }
 
     //게시글 수정
@@ -53,16 +53,17 @@ public class BoardController {
 
     //내가 작성한 게시글 조회
     @GetMapping("/api/board/myboard/{userid}/{page}")
-    public Page<BoardResponseDto> showMyBoard(@PathVariable Long userid,
+    public BoardListResponseDto showMyBoard(@PathVariable Long userid,
                                               @PathVariable int page){
-        return boardService.showMyBoard(userid,page);
+
+        return new BoardListResponseDto(boardService.showMyBoard(userid,page-1));
     }
 
     //내가 좋아요한 게시글 조회
     @GetMapping("/api/board/favoriteboard/{userid}/{page}")
-    public Page<BoardResponseDto> showFavoriteBoard(@PathVariable Long userid,
+    public BoardListResponseDto showFavoriteBoard(@PathVariable Long userid,
                                                     @PathVariable int page){
-        return boardService.showFavoriteBoard(userid,page);
+        return new BoardListResponseDto(boardService.showFavoriteBoard(userid,page-1));
     }
 
 
@@ -73,15 +74,14 @@ public class BoardController {
     }
 
     //상세페이지
-    @GetMapping("/api/board/detail/{boardid}")
-    public BoardResponseDto showBoardDetail(@PathVariable Long boardid,
-                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
-        Long userId = userDetails.getUser().getId();
-        return boardService.showBoardDetail(boardid,userId);
+    @GetMapping("/api/board/detail/{boardid}/{userid}")
+    public BoardResponseDto showBoardDetail(@PathVariable Long boardid, @PathVariable Long userid){
+        BoardResponseDto responseDto = boardService.showBoardDetail(boardid,userid);
+        return responseDto;
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public Object nullex(Exception e) {
+    public String nullex(IllegalArgumentException e) {
         return e.getMessage();
     }
 

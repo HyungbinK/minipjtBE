@@ -40,6 +40,26 @@ public class JwtDecoder {
         return username;
     }
 
+    public Long decodeId(String token) {
+        DecodedJWT decodedJWT = isValidToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("유효한 토큰이 아닙니다."));
+
+        Date expiredDate = decodedJWT
+                .getClaim(CLAIM_EXPIRED_DATE)
+                .asDate();
+
+        Date now = new Date();
+        if (expiredDate.before(now)) {
+            throw new IllegalArgumentException("유효한 토큰이 아닙니다.");
+        }
+
+        Long userId = decodedJWT
+                .getClaim(CLAIM_USER_ID)
+                .asLong();
+
+        return userId;
+    }
+
     private Optional<DecodedJWT> isValidToken(String token) {
         DecodedJWT jwt = null;
 
@@ -56,4 +76,6 @@ public class JwtDecoder {
 
         return Optional.ofNullable(jwt);
     }
+
+
 }

@@ -40,24 +40,24 @@ public class CommentService {
 //            commentResponseDto.setRecommentList(recomments);
             commentResponseDtoList.add(commentResponseDto);
         }
-        List<CommentResponseDto> commentResponseDtoList2 = new ArrayList<>();
-        Iterator<CommentResponseDto> itr = commentResponseDtoList.iterator();
-        CommentResponseDto temp1;
-        CommentResponseDto temp2;
-        while(itr.hasNext()){
-            Iterator<CommentResponseDto> itr2 = commentResponseDtoList.iterator();
-            temp1 = itr.next();
-            if(temp1.getParentId()==0){
-                commentResponseDtoList2.add(temp1);
-                while(itr2.hasNext()){
-                    temp2 = itr.next();
-                    if(temp1.getId()==temp2.getParentId()){
-                        commentResponseDtoList2.add(temp2);
-                    }
-                }
-            }
-        }
-        return commentResponseDtoList2;
+//        List<CommentResponseDto> commentResponseDtoList2 = new ArrayList<>();
+//        Iterator<CommentResponseDto> itr = commentResponseDtoList.iterator();
+//        CommentResponseDto temp1;
+//        CommentResponseDto temp2;
+//        while(itr.hasNext()){
+//            Iterator<CommentResponseDto> itr2 = commentResponseDtoList.iterator();
+//            temp1 = itr.next();
+//            if(temp1.getParentId()==0){
+//                commentResponseDtoList2.add(temp1);
+//                while(itr2.hasNext()){
+//                    temp2 = itr.next();
+//                    if(temp1.getId()==temp2.getParentId()){
+//                        commentResponseDtoList2.add(temp2);
+//                    }
+//                }
+//            }
+//        }
+        return commentResponseDtoList;
     }
 
     //댓글 등록
