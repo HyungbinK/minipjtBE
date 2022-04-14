@@ -3,6 +3,7 @@ package com.sprata.minipjtbe.controller;
 import com.sprata.minipjtbe.dto.BoardListResponseDto;
 import com.sprata.minipjtbe.dto.BoardRequestDto;
 import com.sprata.minipjtbe.dto.BoardResponseDto;
+import com.sprata.minipjtbe.dto.ImageDto;
 import com.sprata.minipjtbe.security.UserDetailsImpl;
 import com.sprata.minipjtbe.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,13 @@ public class BoardController {
 
     //게시글 작성하기
     @PostMapping("/api/board/regist")
-    public String registBoard(@RequestParam("files") MultipartFile file, @RequestParam("title") String title,
-                              @RequestParam("content") String content, @RequestParam("userId") Long userId,
-                              @RequestParam("headinfo") String headinfo, @RequestParam("topinfo") String topinfo,
-                              @RequestParam("bottominfo") String bottominfo, @RequestParam("shoesinfo") String shoesinfo) throws IOException {
+    public ImageDto registBoard(@RequestParam("files") MultipartFile file, @RequestParam("title") String title,
+                                @RequestParam("content") String content, @RequestParam("userId") Long userId,
+                                @RequestParam("headinfo") String headinfo, @RequestParam("topinfo") String topinfo,
+                                @RequestParam("bottominfo") String bottominfo, @RequestParam("shoesinfo") String shoesinfo) throws IOException {
         BoardRequestDto boardDto = new BoardRequestDto(title, content, userId, headinfo, topinfo,  bottominfo, shoesinfo);
-        boardService.registBoard(boardDto, file);
-        return "gogo";
+
+        return boardService.registBoard(boardDto, file);
     }
 
     //전체 게시글 조회

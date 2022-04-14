@@ -35,4 +35,8 @@ public class UserRestController {
         return new UserInfoDto(userDetails);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public Object nullex(IllegalArgumentException e) {
+        return e.getMessage();
+    }
 }

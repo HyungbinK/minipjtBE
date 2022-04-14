@@ -8,6 +8,7 @@ import com.sprata.minipjtbe.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 
@@ -26,10 +27,8 @@ public class FavoriteService {
     }
 
     //좋아요 취소
-    public String unpressFavorite(FavoriteDto favoriteDto){
-        Long userId = favoriteDto.getUserId();
-        Long boardId = favoriteDto.getBoardId();
-        Optional<Favorite> favorite = favoriteRepository.findByBoardIdAndUserId(boardId,userId);
+    public String unpressFavorite(Long boardid, Long userid){
+        Optional<Favorite> favorite = favoriteRepository.findByBoardIdAndUserId(boardid,userid);
         validator.alreadyDelete(!favorite.isPresent(), "이미 좋아요가 취소된 상태입니다.");
         favoriteRepository.deleteById(favorite.get().getId());
         return "좋아요";
